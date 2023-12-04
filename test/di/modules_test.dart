@@ -50,7 +50,8 @@ void main() {
 
       //THEN
       expect(result.options.baseUrl, equals(testChatwootParameters.baseUrl));
-      expect(result.interceptors.isEmpty, equals(true));
+      // ImplyContentTypeInterceptor
+      expect(result.interceptors.length, equals(1));
     });
 
     test(
@@ -61,7 +62,8 @@ void main() {
           .read(chatwootClientAuthServiceProvider(testChatwootParameters));
 
       //THEN
-      expect(result.dio.interceptors.length, equals(0));
+      //ChatwootClientApiInterceptor
+      expect(result.dio.interceptors.length, equals(1));
     });
 
     test(
@@ -73,7 +75,8 @@ void main() {
 
       //THEN
       expect(result.options.baseUrl, equals(testChatwootParameters.baseUrl));
-      expect(result.interceptors.length, equals(1));
+      // ImplyContentTypeInterceptor and ChatwootClientApiInterceptor
+      expect(result.interceptors.length, equals(2));
     });
 
     test(

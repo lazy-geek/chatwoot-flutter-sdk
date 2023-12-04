@@ -47,5 +47,6 @@ class ChatwootL10n extends ChatL10n {
             emptyChatPlaceholder: emptyChatPlaceholder,
             fileButtonAccessibilityLabel: fileButtonAccessibilityLabel,
             inputPlaceholder: inputPlaceholder,
+            unreadMessagesLabel: 'Unread',
             sendButtonAccessibilityLabel: sendButtonAccessibilityLabel);
 }
