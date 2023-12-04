@@ -346,7 +346,10 @@ class _ChatwootChatState extends State<ChatwootChat> {
   ) {
     final index = _messages.indexWhere((element) => element.id == message.id);
     final updatedMessage = message.copyWith(previewData: previewData);
-
+    // try this if above one doesn't work ref(https://pub.dev/packages/flutter_chat_ui/example)
+    // final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
+    //   previewData: previewData,
+    // );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _messages[index] = updatedMessage;
