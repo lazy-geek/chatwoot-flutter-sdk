@@ -150,17 +150,17 @@ void main() {
       //GIVEN
       final messageRequest =
           ChatwootNewMessageRequest(content: "new message", echoId: "echoId");
-      when(mockChatwootClientService.createMessage(any))
+      when(mockChatwootClientService.createMessage(any, any))
           .thenAnswer((_) => Future.value(testMessage));
       when(mockChatwootCallbacks.onMessageSent).thenAnswer((_) => (_, __) {});
       when(mockMessagesDao.saveMessage(any))
           .thenAnswer((_) => Future.microtask(() {}));
 
       //WHEN
-      await repo.sendMessage(messageRequest);
+      await repo.sendMessage(messageRequest, null);
 
       //THEN
-      verify(mockChatwootClientService.createMessage(messageRequest));
+      verify(mockChatwootClientService.createMessage(messageRequest, any));
       verify(mockChatwootCallbacks.onMessageSent
           ?.call(testMessage, messageRequest.echoId));
       verify(mockMessagesDao.saveMessage(testMessage));
@@ -174,14 +174,15 @@ void main() {
           "error", ChatwootClientExceptionType.SEND_MESSAGE_FAILED);
       final messageRequest =
           ChatwootNewMessageRequest(content: "new message", echoId: "echoId");
-      when(mockChatwootClientService.createMessage(any)).thenThrow(testError);
+      when(mockChatwootClientService.createMessage(any, any))
+          .thenThrow(testError);
       when(mockChatwootCallbacks.onError).thenAnswer((_) => (_) {});
 
       //WHEN
-      await repo.sendMessage(messageRequest);
+      await repo.sendMessage(messageRequest, null);
 
       //THEN
-      verify(mockChatwootClientService.createMessage(messageRequest));
+      verify(mockChatwootClientService.createMessage(messageRequest, any));
       verify(mockChatwootCallbacks.onError?.call(testError));
       verifyNever(mockMessagesDao.saveMessage(any));
     });

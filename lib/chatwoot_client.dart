@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:chatwoot_sdk/chatwoot_parameters.dart';
 import 'package:chatwoot_sdk/chatwoot_sdk.dart';
 import 'package:chatwoot_sdk/data/chatwoot_repository.dart';
 import 'package:chatwoot_sdk/data/local/entity/chatwoot_contact.dart';
@@ -5,7 +8,6 @@ import 'package:chatwoot_sdk/data/local/entity/chatwoot_conversation.dart';
 import 'package:chatwoot_sdk/data/remote/requests/chatwoot_action_data.dart';
 import 'package:chatwoot_sdk/data/remote/requests/chatwoot_new_message_request.dart';
 import 'package:chatwoot_sdk/di/modules.dart';
-import 'package:chatwoot_sdk/chatwoot_parameters.dart';
 import 'package:chatwoot_sdk/repository_parameters.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -55,9 +57,9 @@ class ChatwootClient {
   /// [ChatwootMessage] will be returned with the [echoId] on [ChatwootCallbacks.onMessageSent]. If
   /// message fails to send [ChatwootCallbacks.onError] will be triggered [echoId] as data.
   Future<void> sendMessage(
-      {required String content, required String echoId}) async {
+      {required String content, required String echoId, File? file}) async {
     final request = ChatwootNewMessageRequest(content: content, echoId: echoId);
-    await _repository.sendMessage(request);
+    await _repository.sendMessage(request, file);
   }
 
   ///Send chatwoot action performed by user.

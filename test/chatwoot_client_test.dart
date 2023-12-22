@@ -130,28 +130,28 @@ void main() {
         'Given message sends successfully disposed when a sendMessage is called, then repository should be called',
         () async {
       //GIVEN
-      when(mockRepository.sendMessage(any))
+      when(mockRepository.sendMessage(any, any))
           .thenAnswer((_) => Future.microtask(() {}));
 
       //WHEN
       await client.sendMessage(content: "test message", echoId: "id");
 
       //THEN
-      verify(mockRepository.sendMessage(any));
+      verify(mockRepository.sendMessage(any, any));
     });
 
     test(
         'Given message sends successfully disposed when a sendMessage is called, then repository should be called',
         () async {
       //GIVEN
-      when(mockRepository.sendMessage(any))
+      when(mockRepository.sendMessage(any, any))
           .thenAnswer((_) => Future.microtask(() {}));
 
       //WHEN
       await client.sendMessage(content: "test message", echoId: "id");
 
       //THEN
-      verify(mockRepository.sendMessage(any));
+      verify(mockRepository.sendMessage(any, any));
     });
 
     test(

@@ -61,6 +61,9 @@ class ChatwootEventMessageData {
   @JsonKey()
   final String? content;
 
+  @JsonKey()
+  final List<dynamic>? attachments;
+
   @JsonKey(name: "content_attributes")
   final dynamic contentAttributes;
 
@@ -121,6 +124,7 @@ class ChatwootEventMessageData {
       this.conversation,
       this.echoId,
       this.sender,
+      this.attachments,
       this.conversationId,
       this.createdAt,
       this.contentAttributes,

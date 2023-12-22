@@ -99,6 +99,7 @@ ChatwootEventMessageData _$ChatwootEventMessageDataFromJson(
           ? null
           : ChatwootEventMessageUser.fromJson(
               json['sender'] as Map<String, dynamic>),
+      attachments: json['attachments'] as List<dynamic>?,
       conversationId: json['conversation_id'] as int?,
       createdAt: json['created_at'],
       contentAttributes: json['content_attributes'],
@@ -121,6 +122,7 @@ Map<String, dynamic> _$ChatwootEventMessageDataToJson(
     <String, dynamic>{
       'account_id': instance.accountId,
       'content': instance.content,
+      'attachments': instance.attachments,
       'content_attributes': instance.contentAttributes,
       'content_type': instance.contentType,
       'conversation_id': instance.conversationId,

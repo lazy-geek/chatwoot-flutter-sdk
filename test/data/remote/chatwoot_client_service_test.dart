@@ -49,13 +49,19 @@ void main() {
           await TestResourceUtil.readJsonResource(fileName: "message");
       final request =
           ChatwootNewMessageRequest(content: "test message", echoId: "id");
-      when(mockDio.post(any, data: request.toJson())).thenAnswer(
-          (_) => Future.value(_createSuccessResponse(responseBody)));
+
+      when(
+        mockDio.post(
+          any,
+          data: anyNamed('data'),
+          options: anyNamed('options'),
+        ),
+      ).thenAnswer((_) => Future.value(_createSuccessResponse(responseBody)));
 
       //WHEN
-      final result = await clientService.createMessage(request);
+      final result = await clientService.createMessage(request, null);
 
-      //THEN
+      // //THEN
       expect(result, ChatwootMessage.fromJson(responseBody));
     });
 
@@ -65,13 +71,17 @@ void main() {
       //GIVEN
       final request =
           ChatwootNewMessageRequest(content: "test message", echoId: "id");
-      when(mockDio.post(any, data: request.toJson())).thenAnswer(
+      when(mockDio.post(
+        any,
+        data: anyNamed('data'),
+        options: anyNamed('options'),
+      )).thenAnswer(
           (_) => Future.value(_createErrorResponse(statusCode: 401, body: {})));
 
       //WHEN
       ChatwootClientException? chatwootClientException;
       try {
-        await clientService.createMessage(request);
+        await clientService.createMessage(request, null);
       } on ChatwootClientException catch (e) {
         chatwootClientException = e;
       }
@@ -89,12 +99,16 @@ void main() {
       final testError = DioError(requestOptions: RequestOptions(path: ""));
       final request =
           ChatwootNewMessageRequest(content: "test message", echoId: "id");
-      when(mockDio.post(any, data: request.toJson())).thenThrow(testError);
+      when(mockDio.post(
+        any,
+        data: anyNamed('data'),
+        options: anyNamed('options'),
+      )).thenThrow(testError);
 
       //WHEN
       ChatwootClientException? chatwootClientException;
       try {
-        await clientService.createMessage(request);
+        await clientService.createMessage(request, null);
       } on ChatwootClientException catch (e) {
         chatwootClientException = e;
       }

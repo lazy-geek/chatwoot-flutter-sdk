@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:chatwoot_sdk/chatwoot_callbacks.dart';
 import 'package:chatwoot_sdk/chatwoot_client.dart';
@@ -37,7 +38,7 @@ abstract class ChatwootRepository {
 
   void listenForEvents();
 
-  Future<void> sendMessage(ChatwootNewMessageRequest request);
+  Future<void> sendMessage(ChatwootNewMessageRequest request, File? file);
 
   void sendAction(ChatwootActionType action);
 
@@ -112,9 +113,10 @@ class ChatwootRepositoryImpl extends ChatwootRepository {
   }
 
   ///Sends message to chatwoot inbox
-  Future<void> sendMessage(ChatwootNewMessageRequest request) async {
+  Future<void> sendMessage(
+      ChatwootNewMessageRequest request, File? file) async {
     try {
-      final createdMessage = await clientService.createMessage(request);
+      final createdMessage = await clientService.createMessage(request, file);
       await localStorage.messagesDao.saveMessage(createdMessage);
       callbacks.onMessageSent?.call(createdMessage, request.echoId);
       if (clientService.connection != null && !_isListeningForEvents) {
@@ -140,6 +142,11 @@ class ChatwootRepositoryImpl extends ChatwootRepository {
 
     final newSubscription = clientService.connection!.stream.listen((event) {
       ChatwootEvent chatwootEvent = ChatwootEvent.fromJson(jsonDecode(event));
+      // print('event message: ${chatwootEvent.message}');
+      // print('event type: ${chatwootEvent.type}');
+      // print('event message event: ${chatwootEvent.message?.event}');
+      // print('event message data: ${chatwootEvent.message?.data}');
+
       if (chatwootEvent.type == ChatwootEventType.welcome) {
         callbacks.onWelcome?.call();
       } else if (chatwootEvent.type == ChatwootEventType.ping) {

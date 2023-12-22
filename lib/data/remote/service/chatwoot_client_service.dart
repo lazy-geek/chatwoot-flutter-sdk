@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:chatwoot_sdk/data/local/entity/chatwoot_contact.dart';
 import 'package:chatwoot_sdk/data/local/entity/chatwoot_conversation.dart';
@@ -10,6 +11,8 @@ import 'package:chatwoot_sdk/data/remote/requests/chatwoot_action_data.dart';
 import 'package:chatwoot_sdk/data/remote/requests/chatwoot_new_message_request.dart';
 import 'package:chatwoot_sdk/data/remote/service/chatwoot_client_api_interceptor.dart';
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Service for handling chatwoot api calls
@@ -27,7 +30,8 @@ abstract class ChatwootClientService {
 
   Future<List<ChatwootConversation>> getConversations();
 
-  Future<ChatwootMessage> createMessage(ChatwootNewMessageRequest request);
+  Future<ChatwootMessage> createMessage(
+      ChatwootNewMessageRequest request, File? file);
 
   Future<ChatwootMessage> updateMessage(String messageIdentifier, update);
 
@@ -46,11 +50,36 @@ class ChatwootClientServiceImpl extends ChatwootClientService {
   ///Sends message to chatwoot inbox
   @override
   Future<ChatwootMessage> createMessage(
-      ChatwootNewMessageRequest request) async {
+      ChatwootNewMessageRequest request, File? file) async {
     try {
+      FormData data;
+      if (file != null) {
+        String mimeType =
+            lookupMimeType(file.path) ?? 'application/octet-stream';
+        String mimee = mimeType.split('/')[0];
+        String type = mimeType.split('/')[1];
+
+        FormData formData = FormData.fromMap({
+          'attachments[]': [
+            await MultipartFile.fromFile(file.path,
+                filename: file.path.split("/").last,
+                contentType: MediaType(mimee, type))
+          ],
+          'echo_id': request.echoId,
+          'content': request.content,
+        });
+        data = formData;
+      } else {
+        data = FormData.fromMap(request.toJson());
+      }
+
       final createResponse = await _dio.post(
           "/public/api/v1/inboxes/${ChatwootClientApiInterceptor.INTERCEPTOR_INBOX_IDENTIFIER_PLACEHOLDER}/contacts/${ChatwootClientApiInterceptor.INTERCEPTOR_CONTACT_IDENTIFIER_PLACEHOLDER}/conversations/${ChatwootClientApiInterceptor.INTERCEPTOR_CONVERSATION_IDENTIFIER_PLACEHOLDER}/messages",
-          data: request.toJson());
+          data: data,
+          options: Options(
+              contentType:
+                  "multipart/form-data; boundary=----WebKitFormBoundary"));
+
       if ((createResponse.statusCode ?? 0).isBetween(199, 300)) {
         return ChatwootMessage.fromJson(createResponse.data);
       } else {
