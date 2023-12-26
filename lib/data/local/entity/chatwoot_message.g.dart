@@ -18,6 +18,7 @@ class ChatwootMessageAdapter extends TypeAdapter<ChatwootMessage> {
     };
     return ChatwootMessage(
       id: fields[0] as int,
+      echoId: fields[9] as String?,
       content: fields[1] as String?,
       messageType: fields[2] as int?,
       contentType: fields[3] as String?,
@@ -32,7 +33,7 @@ class ChatwootMessageAdapter extends TypeAdapter<ChatwootMessage> {
   @override
   void write(BinaryWriter writer, ChatwootMessage obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class ChatwootMessageAdapter extends TypeAdapter<ChatwootMessage> {
       ..writeByte(7)
       ..write(obj.attachments)
       ..writeByte(8)
-      ..write(obj.sender);
+      ..write(obj.sender)
+      ..writeByte(9)
+      ..write(obj.echoId);
   }
 
   @override
@@ -71,6 +74,7 @@ class ChatwootMessageAdapter extends TypeAdapter<ChatwootMessage> {
 ChatwootMessage _$ChatwootMessageFromJson(Map<String, dynamic> json) =>
     ChatwootMessage(
       id: idFromJson(json['id']),
+      echoId: json['echo_id'] as String?,
       content: json['content'] as String?,
       messageType: messageTypeFromJson(json['message_type']),
       contentType: json['content_type'] as String?,
@@ -95,4 +99,5 @@ Map<String, dynamic> _$ChatwootMessageToJson(ChatwootMessage instance) =>
       'conversation_id': instance.conversationId,
       'attachments': instance.attachments,
       'sender': instance.sender?.toJson(),
+      'echo_id': instance.echoId,
     };

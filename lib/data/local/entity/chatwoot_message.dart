@@ -57,11 +57,16 @@ class ChatwootMessage extends Equatable {
   @HiveField(8)
   final ChatwootEventMessageUser? sender;
 
+  @JsonKey(name: "echo_id")
+  @HiveField(9)
+  final String? echoId;
+
   ///checks if message belongs to contact making the request
-  bool get isMine => messageType != 1;
+  bool get isMine => (messageType ?? 0) == 0;
 
   ChatwootMessage(
       {required this.id,
+      required this.echoId,
       required this.content,
       required this.messageType,
       required this.contentType,
@@ -80,6 +85,7 @@ class ChatwootMessage extends Equatable {
   List<Object?> get props => [
         id,
         content,
+        echoId,
         messageType,
         contentType,
         contentAttributes,

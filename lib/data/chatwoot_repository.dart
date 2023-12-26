@@ -104,7 +104,13 @@ class ChatwootRepositoryImpl extends ChatwootRepository {
           orElse: () =>
               persistedConversation //highly unlikely orElse will be called but still added it just in case
           );
-      localStorage.conversationDao.saveConversation(refreshedConversation);
+      if (refreshedConversation.status == 'resolved') {
+        // localStorage.conversationDao.deleteConversation();
+        // localStorage.messagesDao.clear();
+        callbacks.onConversationResolved?.call();
+      } else {
+        localStorage.conversationDao.saveConversation(refreshedConversation);
+      }
     } on ChatwootClientException catch (e) {
       callbacks.onError?.call(e);
     }
@@ -142,6 +148,8 @@ class ChatwootRepositoryImpl extends ChatwootRepository {
 
     final newSubscription = clientService.connection!.stream.listen((event) {
       ChatwootEvent chatwootEvent = ChatwootEvent.fromJson(jsonDecode(event));
+      // print('event : ${event}');
+
       // print('event message: ${chatwootEvent.message}');
       // print('event type: ${chatwootEvent.type}');
       // print('event message event: ${chatwootEvent.message?.event}');
@@ -187,9 +195,9 @@ class ChatwootRepositoryImpl extends ChatwootRepository {
           chatwootEvent.message?.data?.status == "resolved" &&
           chatwootEvent.message?.data?.id ==
               (localStorage.conversationDao.getConversation()?.id ?? 0)) {
-        //delete conversation result
-        localStorage.conversationDao.deleteConversation();
-        localStorage.messagesDao.clear();
+        // //delete conversation result
+        // localStorage.conversationDao.deleteConversation();
+        // localStorage.messagesDao.clear();
         callbacks.onConversationResolved?.call();
       } else if (chatwootEvent.message?.event ==
           ChatwootEventMessageType.presence_update) {
