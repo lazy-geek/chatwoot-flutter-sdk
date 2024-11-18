@@ -95,6 +95,12 @@ class ChatwootRepositoryImpl extends ChatwootRepository {
       final contact = await clientService.getContact();
       localStorage.contactDao.saveContact(contact);
 
+      // we call this on every initialization so it updates the jwt
+      if (user != null) {
+        final updatedContact = await clientService.updateContact(user.toJson());
+        final contact = await clientService.getContact();
+        localStorage.contactDao.saveContact(contact);
+      }
       //refresh conversation
       final conversations = await clientService.getConversations();
       final persistedConversation =

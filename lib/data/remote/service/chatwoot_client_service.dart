@@ -117,10 +117,12 @@ class ChatwootClientServiceImpl extends ChatwootClientService {
   ///Gets contact of current chatwoot client instance
   @override
   Future<ChatwootContact> getContact() async {
+    print("chatwoot: getContact()");
     try {
       final createResponse = await _dio.get(
           "/public/api/v1/inboxes/${ChatwootClientApiInterceptor.INTERCEPTOR_INBOX_IDENTIFIER_PLACEHOLDER}/contacts/${ChatwootClientApiInterceptor.INTERCEPTOR_CONTACT_IDENTIFIER_PLACEHOLDER}");
       if ((createResponse.statusCode ?? 0).isBetween(199, 300)) {
+        print("chatwoot: getContact() response: ${createResponse.data}");
         return ChatwootContact.fromJson(createResponse.data);
       } else {
         throw ChatwootClientException(
@@ -136,6 +138,8 @@ class ChatwootClientServiceImpl extends ChatwootClientService {
   ///Gets all conversation of current chatwoot client instance
   @override
   Future<List<ChatwootConversation>> getConversations() async {
+    print("chatwoot: getConversations()");
+
     try {
       final createResponse = await _dio.get(
           "/public/api/v1/inboxes/${ChatwootClientApiInterceptor.INTERCEPTOR_INBOX_IDENTIFIER_PLACEHOLDER}/contacts/${ChatwootClientApiInterceptor.INTERCEPTOR_CONTACT_IDENTIFIER_PLACEHOLDER}/conversations");
@@ -157,11 +161,14 @@ class ChatwootClientServiceImpl extends ChatwootClientService {
   ///Update current client instance's contact
   @override
   Future<ChatwootContact> updateContact(update) async {
+    print("chatwoot: updateContact()");
+
     try {
       final updateResponse = await _dio.patch(
           "/public/api/v1/inboxes/${ChatwootClientApiInterceptor.INTERCEPTOR_INBOX_IDENTIFIER_PLACEHOLDER}/contacts/${ChatwootClientApiInterceptor.INTERCEPTOR_CONTACT_IDENTIFIER_PLACEHOLDER}",
           data: update);
       if ((updateResponse.statusCode ?? 0).isBetween(199, 300)) {
+        print("chatwoot: updateContact() response: ${updateResponse}");
         return ChatwootContact.fromJson(updateResponse.data);
       } else {
         throw ChatwootClientException(
